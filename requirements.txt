@@ -1,0 +1,12 @@
+# Core deep-learning framework (Keras ships inside TensorFlow)
+tensorflow==2.16.2
+
+# Numerical arrays — the data structure everything is built on
+numpy
+
+# Plotting — we use this to actually *look* at our images and training curves
+matplotlib
+
+# Web app for the phone-based classifier interface (src/app.py)
+flask
+qrcode[pil]

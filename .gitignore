@@ -1,0 +1,13 @@
+# Virtual environment — recreate it from requirements.txt, never commit it
+venv/
+.venv/
+
+# Python cruft
+__pycache__/
+*.pyc
+
+# Generated artifacts (images, trained models) — reproducible, so not tracked
+outputs/
+
+# Downloaded image data (re-downloadable from Caltech) — too big to track
+data/
