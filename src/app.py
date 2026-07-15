@@ -25,7 +25,7 @@ import tensorflow as tf
 
 MODEL_PATH = "outputs/household10_transfer_deep.keras"
 CLASS_NAMES = json.load(open("outputs/class_names.json"))
-IMG_SIZE = (160, 160)
+IMG_SIZE = (224, 224)
 PORT = 8000
 
 # Load the trained model ONCE at startup (not per request -- loading is slow).

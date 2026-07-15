@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from caltech_data import load_datasets
 from transfer_model import build_model
 
-EPOCHS = 10
+EPOCHS = 15   # heavier augmentation makes each epoch harder, so give it more
 HIDDEN_UNITS = 128
 
 

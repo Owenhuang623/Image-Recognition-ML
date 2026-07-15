@@ -12,7 +12,7 @@ Read the model top to bottom as a pipeline for one 160x160 photo:
     input (160x160x3, pixels 0-255)
       -> data augmentation   (random flips/rotations -- fights overfitting)
       -> preprocess_input    (scale pixels to [-1, 1], what MobileNet expects)
-      -> MobileNetV2 backbone (FROZEN) -> 5x5x1280 feature maps
+      -> MobileNetV2 backbone (FROZEN) -> 7x7x1280 feature maps
       -> GlobalAveragePooling -> 1280-vector (one number per feature map)
       -> Dropout             (randomly zero 20% -- more overfitting defense)
       -> Dense(10, softmax)  -> 10 class probabilities
@@ -22,7 +22,9 @@ from tensorflow.keras import layers, models
 from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
-IMG_SHAPE = (160, 160, 3)
+from augmentation import build_augmentation
+
+IMG_SHAPE = (224, 224, 3)   # native MobileNetV2 / ImageNet resolution
 
 
 def build_model(num_classes=10, hidden_units=None):
@@ -48,15 +50,11 @@ def build_model(num_classes=10, hidden_units=None):
     base_model.trainable = False
 
     # --- Data augmentation -------------------------------------------------
-    # With only ~500 training images, the model could easily memorize them.
-    # These layers randomly flip/rotate each image every epoch, so the model
-    # effectively sees "new" variations -- a cheap, strong defense against the
-    # overfitting we watched happen in Stage 1. (Active only during training;
-    # Keras automatically turns them off at inference.)
-    data_augmentation = models.Sequential([
-        layers.RandomFlip("horizontal"),
-        layers.RandomRotation(0.1),
-    ], name="data_augmentation")
+    # The full realistic pipeline (flip / rotate / zoom / translate / contrast /
+    # brightness) lives in augmentation.py. Active only during training; Keras
+    # turns these into no-ops at inference, so we validate/predict on clean
+    # images. See augmentation.py for the golden rule and what's excluded.
+    data_augmentation = build_augmentation()
 
     # --- Assemble with the functional API ----------------------------------
     inputs = layers.Input(shape=IMG_SHAPE)
@@ -65,7 +63,7 @@ def build_model(num_classes=10, hidden_units=None):
     # training=False keeps the backbone's BatchNorm layers in inference mode --
     # important when the backbone is frozen, or its running stats would drift.
     x = base_model(x, training=False)
-    x = layers.GlobalAveragePooling2D()(x)  # 5x5x1280 -> 1280, cheaply
+    x = layers.GlobalAveragePooling2D()(x)  # 7x7x1280 -> 1280, cheaply
     x = layers.Dropout(0.2)(x)
     # Optional hidden layer: turns the head from a linear classifier into a
     # 2-layer fully-connected net. More capacity, but more params to overfit.

@@ -17,7 +17,7 @@ import tensorflow as tf
 
 MODEL_PATH = "outputs/household10_transfer.keras"
 DATA_DIR = "data/household10"
-IMG_SIZE = (160, 160)
+IMG_SIZE = (224, 224)
 
 
 def get_class_names():

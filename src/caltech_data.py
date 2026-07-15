@@ -19,7 +19,7 @@ import tensorflow as tf
 from tensorflow.keras.utils import image_dataset_from_directory
 
 DATA_DIR = "data/household10"
-IMG_SIZE = (160, 160)   # MobileNetV2 works well at 160x160; bigger = slower
+IMG_SIZE = (224, 224)   # MobileNetV2's native ImageNet resolution (more detail)
 BATCH_SIZE = 32
 SEED = 123              # fixing the seed makes the train/val split reproducible
 
